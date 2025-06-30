@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #79CC46;           /* Main green */
+  --color-primary-light: #E3FFDF;     /* Sidebar active icon */
+  --color-sidebar: #FFFFF5;        /* Overall page background */
+  --color-background: #FAFAE9;           /* content block backgrounds */
+  --color-status-success: #EEFFE4;    /* Success box (land status) */
+  --color-error: #F85D5D;             /* Error state */
+  --color-text-primary: #121212;      /* Main text in content blocks */
+  --color-text-secondary: #787878;    /* Secondary / lighter text */
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: Arial, Helvetica, sans-serif;
+}
+

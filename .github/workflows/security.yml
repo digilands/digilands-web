@@ -39,7 +39,9 @@ jobs:
         run: pnpm audit --audit-level=moderate
 
       - name: Ensure pip is available
-        run: python3 -m ensurepip --upgrade
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
 
       - name: Install Semgrep
         run: python3 -m pip install semgrep

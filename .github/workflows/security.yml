@@ -1,0 +1,140 @@
+name: Security Analysis
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    - cron: "0 2 * * *"
+
+jobs:
+  security-analysis:
+    name: Security Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Run dependency vulnerability scan
+        run: pnpm audit --audit-level=moderate
+
+      - name: Ensure pip is available
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+
+      - name: Install Semgrep
+        run: python3 -m pip install semgrep
+
+      - name: Run Semgrep SAST
+        run: |
+          semgrep \
+            --config=p/security-audit \
+            --config=p/javascript \
+            --config=p/typescript \
+            --config=p/react \
+            --config=p/nextjs \
+            --config=p/owasp-top-ten \
+            --json \
+            --output=semgrep-results.json \
+            --exclude="node_modules" \
+            --exclude=".next" \
+            --exclude="build" \
+            --exclude="dist" \
+            .
+
+      - name: Upload Semgrep results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: semgrep-results.json
+        continue-on-error: true
+
+      - name: ESLint Security Analysis
+        run: |
+          pnpm eslint . \
+            --ext .js,.jsx,.ts,.tsx \
+            --format json \
+            --output-file eslint-results.json \
+            --ignore-path .gitignore
+        continue-on-error: true
+
+      - name: Secret Detection with detect-secrets
+        run: |
+          python3 -m pip install detect-secrets
+          # If error: No such plugin, run `pre-commit autoupdate` and regenerate baseline
+          detect-secrets scan --all-files --baseline .secrets.baseline || true
+          detect-secrets audit .secrets.baseline
+        continue-on-error: true
+
+      - name: TypeScript Security Check
+        run: pnpm tsc --noEmit
+
+      - name: Upload security scan results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-scan-results
+          path: |
+            semgrep-results.json
+            eslint-results.json
+          retention-days: 30
+
+  codeql-analysis:
+    name: CodeQL Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Build Next.js app
+        run: pnpm build
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:javascript"

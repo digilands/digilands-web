@@ -1,0 +1,88 @@
+repos:
+  # General code quality
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=1000"]
+      - id: no-commit-to-branch
+        args: ["--branch", "main", "--branch", "master"]
+
+  # JavaScript/TypeScript linting (using local installation)
+  - repo: local
+    hooks:
+      - id: eslint
+        name: ESLint
+        entry: pnpm eslint
+        language: node
+        files: \.(js|jsx|ts|tsx)$
+        types: [file]
+
+  # Prettier for code formatting (using local installation)
+  - repo: local
+    hooks:
+      - id: prettier
+        name: Prettier
+        entry: pnpm prettier --write
+        language: node
+        files: \.(js|jsx|ts|tsx|json|css|scss|md|yaml|yml)$
+        exclude: |
+          (?x)^(
+              \.next/.*|
+              node_modules/.*|
+              build/.*|
+              dist/.*
+          )$
+
+  # Secret detection
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ["--baseline", ".secrets.baseline"]
+        exclude: |
+          (?x)^(
+              \.next/.*|
+              node_modules/.*|
+              pnpm-lock\.yaml$|
+              \.git/.*|
+              \.secrets\.baseline
+          )$
+
+  # Semgrep for SAST
+  - repo: https://github.com/returntocorp/semgrep
+    rev: v1.89.0
+    hooks:
+      - id: semgrep
+        args:
+          - --config=p/security-audit
+          - --config=p/javascript
+          - --config=p/typescript
+          - --config=p/react
+          - --config=p/nextjs
+          - --error
+          - --skip-unknown-extensions
+        exclude: |
+          (?x)^(
+              \.next/.*|
+              node_modules/.*|
+              build/.*|
+              dist/.*|
+              .*\.test\.(js|jsx|ts|tsx)$|
+              .*\.spec\.(js|jsx|ts|tsx)$
+          )$
+
+  # TypeScript type checking
+  - repo: local
+    hooks:
+      - id: typescript-check
+        name: TypeScript Check
+        entry: pnpm tsc --noEmit
+        language: node
+        files: \.(ts|tsx)$
+        pass_filenames: false

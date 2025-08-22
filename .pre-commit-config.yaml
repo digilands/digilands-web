@@ -49,6 +49,7 @@ repos:
           (?x)^(
               \.next/.*|
               node_modules/.*|
+              pnpm-lock\.yaml$|
               \.git/.*|
               \.secrets\.baseline
           )$

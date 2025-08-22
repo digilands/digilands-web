@@ -2,7 +2,6 @@ import { dirname } from "path";
 import { fileURLToPath } from "url";
 import { FlatCompat } from "@eslint/eslintrc";
 import security from "eslint-plugin-security";
-import tseslint from "@typescript-eslint/eslint-plugin";
 import tsparser from "@typescript-eslint/parser";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
@@ -21,18 +20,14 @@ const eslintConfig = [
     files: ["**/*.{js,jsx,ts,tsx}"],
     plugins: {
       security,
-      "@typescript-eslint": tseslint,
       react,
       "react-hooks": reactHooks,
     },
     languageOptions: {
       parser: tsparser,
       parserOptions: {
-        ecmaVersion: "latest",
-        sourceType: "module",
-        ecmaFeatures: {
-          jsx: true,
-        },
+        project: "./tsconfig.json",
+        tsconfigRootDir: __dirname,
       },
     },
     rules: {
@@ -84,10 +79,10 @@ const eslintConfig = [
       "no-useless-concat": "error",
       "no-void": "error",
       "no-with": "error",
-      "radix": "error",
+      radix: "error",
       "vars-on-top": "error",
       "wrap-iife": "error",
-      "yoda": "error"
+      yoda: "error",
     },
   },
   {
@@ -97,9 +92,9 @@ const eslintConfig = [
       "build/",
       "dist/",
       "*.config.js",
-      "*.config.mjs"
-    ]
-  }
+      "*.config.mjs",
+    ],
+  },
 ];
 
 export default eslintConfig;

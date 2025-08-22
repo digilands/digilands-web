@@ -41,6 +41,9 @@ importers:
       "@tailwindcss/postcss":
         specifier: ^4
         version: 4.1.10
+      "@types/eslint-plugin-security":
+        specifier: ^3.0.0
+        version: 3.0.0
       "@types/node":
         specifier: ^20
         version: 20.19.1
@@ -1018,6 +1021,18 @@ packages:
     resolution:
       {
         integrity: sha512-6+7nlbMVX/PVDCwaIQ8nTOPveOcFLSt8GcXdx8hD0bt39uWxYT88uXzqTd4fTvqta7oeUJqudepapKNt2DYJFw==,
+      }
+
+  "@types/eslint-plugin-security@3.0.0":
+    resolution:
+      {
+        integrity: sha512-CpJ7dhqhfURdYHAlaQM4vfl75lDYnGl5+EZKoO/fW0hEREZa9+EBn1g10XLDM6n5yJSuTAPn5afkM4vNzhlyFQ==,
+      }
+
+  "@types/eslint@9.6.1":
+    resolution:
+      {
+        integrity: sha512-FXx2pKgId/WyYo2jXw63kk7/+TY7u7AziEJxJAnSFzHlqTAS3Ync6SvgYAN/k4/PQpnnVuzoMuVnByKK2qp0ag==,
       }
 
   "@types/estree@1.0.8":
@@ -3919,6 +3934,15 @@ snapshots:
     dependencies:
       tslib: 2.8.1
     optional: true
+
+  "@types/eslint-plugin-security@3.0.0":
+    dependencies:
+      "@types/eslint": 9.6.1
+
+  "@types/eslint@9.6.1":
+    dependencies:
+      "@types/estree": 1.0.8
+      "@types/json-schema": 7.0.15
 
   "@types/estree@1.0.8": {}
 

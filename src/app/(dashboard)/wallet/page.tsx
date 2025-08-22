@@ -1,9 +1,5 @@
-import React from 'react'
+import React from "react";
 
 export default function page() {
-  return (
-    <h1>
-     wallet
-    </h1>
-  )
+  return <h1>wallet</h1>;
 }
